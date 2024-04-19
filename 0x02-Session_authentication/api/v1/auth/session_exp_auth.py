@@ -32,17 +32,17 @@ class SessionExpAuth(SessionAuth):
         Args:
             user_id (str): user id
         """
-        session_id = super().create_session(user_id)
-        if session_id is None:
+        session = super().create_session(user_id)
+        if session is None:
             return None
         session_dictionary = {
             "user_id": user_id,
             "created_at": datetime.now()
         }
-        self.user_id_by_session_id[session_id] = session_dictionary
-        return session_id
+        self.user_id_by_session_id[session] = session_dictionary
+        return session
 
-    def user_id_for_session_id(self, session_id=None):
+    def user_id_for_session_id(self, session=None):
         """
         Returns a user ID based on a session ID
         Args:
@@ -50,9 +50,9 @@ class SessionExpAuth(SessionAuth):
         Return:
             user id or None if session_id is None or not a string
         """
-        if session_id is None:
+        if session is None:
             return None
-        user_details = self.user_id_by_session_id.get(session_id)
+        user_details = self.user_id_by_session_id.get(session)
         if user_details is None:
             return None
         if "created_at" not in user_details.keys():
