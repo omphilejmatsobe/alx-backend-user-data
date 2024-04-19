@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
-""" Module of Users views
 """
+Module for Users views
+"""
+
 import os
 from flask import jsonify, request
 from api.v1.views import app_views
@@ -26,10 +28,10 @@ def auth_session():
     for user in users:
         if user.is_valid_password(password):
             from api.v1.app import auth
-            session_id = auth.create_session(user.id)
+            session = auth.create_session(user.id)
             resp = jsonify(user.to_json())
             session_name = os.getenv('SESSION_NAME')
-            resp.set_cookie(session_name, session_id)
+            resp.set_cookie(session_name, session)
             return resp
     return jsonify({"error": "wrong password"}), 401
 
