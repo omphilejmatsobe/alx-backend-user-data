@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """
-Module for database session class
+Module for database session database
 """
 
-from .session_exp_auth import SessionExpAuth
+
+from datetime import datetime, timedelta, timedelta
+from api.v1.auth.session_exp_auth import SessionExpAuth
 from models.user_session import UserSession
 
 
@@ -13,48 +15,48 @@ class SessionDBAuth(SessionExpAuth):
     """
 
     def create_session(self, user_id=None):
-        """
-        Create a Session ID for a user_id
-        Args:
-           user_id (str): user id
-        """
+        """ Session ID generator """
         session = super().create_session(user_id)
-        if not session:
+        if user_id is None:
             return None
-        kw = {
-            "user_id": user_id,
-            "session_id": session
-        }
-        user = UserSession(**kw)
-        user.save()
+        user_session = UserSession(user_id=user_id, session_id=session)
+        user_session.save()
         return session
 
     def user_id_for_session_id(self, session_id=None):
-        """
-        Returns a user ID based on a session ID
-        Args:
-            session_id (str): session ID
-        Return:
-            user id or None if session_id is None or not a string
-        """
+        """ Returns user_id from session_id """
+        if session is None:
+            return None
+        UserSession.load_from_file()
+        is_valid_user = UserSession.search({'session_id': session})
+        
+        if not is_valid_user:
+            return None
+        is_valid_user = is_valid_user[0]
+        start_time = is_valid_user.created_at
+        time_delta = timedelta(seconds=self.session_duration)
 
-        user_id = UserSession.search({"session_id": session_id})
-        if user_id:
-            return user_id
-        return None
+        if (start_time + time_delta) < datetime.now():
+            return None
+        return is_valid_user.user_id
 
     def destroy_session(self, request=None):
-        """
-        Destroy a UserSession instance based on a
-        Session ID from a request cookie
-        """
-        if request is None:
+        """ Destroy usersession from session id from request cookie """
+        cookie_data = self.session_cookie(request)
+        
+        if cookie_data is None:
             return False
-        session_id = self.session_cookie(request)
-        if not session_id:
+        if not self.user_id_for_session_id(cookie_data):
             return False
-        user_session = UserSession.search({"session_id": session_id})
-        if user_session:
-            user_session[0].remove()
-            return True
-        return False
+        
+        user_session = UserSession.search({'session_id': cookie_data})
+        if not user_session:
+            return False
+        user_session = user_session[0]
+        try:
+            user_session.remove()
+            UserSession.save_to_file()
+        except Exception:
+            return False
+
+        return True
