@@ -29,7 +29,7 @@ class SessionDBAuth(SessionExpAuth):
             return None
         UserSession.load_from_file()
         is_valid_user = UserSession.search({'session_id': session})
-        
+
         if not is_valid_user:
             return None
         is_valid_user = is_valid_user[0]
@@ -43,12 +43,12 @@ class SessionDBAuth(SessionExpAuth):
     def destroy_session(self, request=None):
         """ Destroy usersession from session id from request cookie """
         cookie_data = self.session_cookie(request)
-        
+
         if cookie_data is None:
             return False
         if not self.user_id_for_session_id(cookie_data):
             return False
-        
+
         user_session = UserSession.search({'session_id': cookie_data})
         if not user_session:
             return False
