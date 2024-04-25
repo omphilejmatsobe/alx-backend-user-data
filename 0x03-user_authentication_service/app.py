@@ -35,7 +35,7 @@ def login():
     _id = AUTH.create_session(email)
     res = jsonify({"email": email, "message": "logged in"})
     res.set_cookie("session_id", _id)
-    return response
+    return res
 
 
 @app.route('/sessions', methods=['DELETE'], strict_slashes=False)
