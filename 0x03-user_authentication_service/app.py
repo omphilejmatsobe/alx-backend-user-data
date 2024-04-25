@@ -38,18 +38,18 @@ def login():
     return response
 
 
-@app.route("/sessions", methods=["DELETE"])
+@app.route('/sessions', methods=['DELETE'], strict_slashes=False)
 def logout():
     """
     Responds to the DELETE /sessions route
     """
 
-    session_id = request.cookies.get("session_id")
+    session_id = request.cookies.get('session_id')
     user = AUTH.get_user_from_session_id(session_id)
-    if not user:
+    if session_id is None or user is None:
         abort(403)
     AUTH.destroy_session(user.id)
-    return redirect(url_for("home"))
+    return redirect('/')
 
 
 @app.route("/users", methods=["POST"])
