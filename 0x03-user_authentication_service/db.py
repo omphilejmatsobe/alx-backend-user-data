@@ -31,21 +31,17 @@ class DB:
         return self.__session
 
     def add_user(self, email: str, hashed_password: str) -> User:
-        """ Creates new User instance and
+        """ Creates new User profiles and
             saves them to the database.
-            Args:
-                - email
-                - hashed_password
-            Return:
-                - new User object
         """
-        session = self._session
+
+        user_session = self._session
         try:
             new_user = User(email=email, hashed_password=hashed_password)
-            session.add(new_user)
-            session.commit()
+            user_session.add(new_user)
+            user_session.commit()
         except Exception:
-            session.rollback()
+            user_session.rollback()
             new_user = None
         return new_user
 
