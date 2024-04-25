@@ -11,6 +11,7 @@ from sqlalchemy.orm.session import Session
 from sqlalchemy.orm.exc import NoResultFound
 from user import Base, User
 
+
 class DB:
     """
     DB class
@@ -36,7 +37,7 @@ class DB:
 
     def add_user(self, email: str, hashed_password: str) -> User:
         """ Method saves new user to the database"""
-        
+
         new_user = User(email=email, hashed_password=hashed_password)
         try:
             self._session.add(new_user)
@@ -44,4 +45,4 @@ class DB:
         except Exception:
             self._session.rollback()
             new_user = None
-        return user
+        return new_user
