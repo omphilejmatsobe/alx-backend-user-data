@@ -50,8 +50,8 @@ class DB:
 
         if kwargs is None:
             raise InvalidRequestError
-        for x in kwargs.keys():
-            if not hasattr(User, x):
+        for k in kwargs.keys():
+            if not hasattr(User, k):
                 raise InvalidRequestError
         try:
             user = self._session.query(User).filter_by(**kwargs).first()
@@ -71,9 +71,9 @@ class DB:
         """
 
         user = self.find_user_by(id=user_id)
-        for x, y in kwargs.items():
-            if not hasattr(user, x):
+        for k, v in kwargs.items():
+            if not hasattr(user, k):
                 raise ValueError
             else:
-                setattr(user, x, y)
+                setattr(user, k, v)
         self._session.commit()
