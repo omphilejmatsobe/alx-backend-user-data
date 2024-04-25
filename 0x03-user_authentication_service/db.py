@@ -58,7 +58,7 @@ class DB:
 
         session = self._session
         query = session.query(User)
-        user = query.filter(tuple_(*attributes).in_([tuple(values)])).first()
+        user = query.filter(tuple_(*attributes).in_([tuple(value)])).first()
         if not user:
             raise NoResultFound()
         return user
